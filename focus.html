@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EYEDOPE • PLAYING</title>
+  <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+  <style>
+    :root{--red:#ff0000;--black:#000;--glass:rgba(0,0,0,0.5);}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{
+      background:#000;
+      color:var(--red);
+      font-family:'Creepster',cursive;
+      overflow:hidden;
+      height:100vh;
+    }
+    #lightning{
+      position:fixed;top:0;left:0;width:100%;height:100%;
+      background:#fff;opacity:0;pointer-events:none;z-index:9999;
+      animation:flash 11s infinite;
+    }
+    @keyframes flash{
+      0%,100%{opacity:0;}
+      3%{opacity:.85;}
+      5%{opacity:0;}
+      8%{opacity:.55;}
+      10%{opacity:0;}
+    }
+    iframe{
+      position:absolute;top:0;left:0;width:100%;height:100%;
+      border:none;
+      z-index:1;
+    }
+    .overlay{
+      position:absolute;bottom:1rem;left:1rem;
+      background:var(--glass);backdrop-filter:blur(8px);
+      padding:.5rem 1rem;border-radius:8px;
+      border:1px solid rgba(255,0,0,.4);
+      font-size:1.1rem;z-index:2;
+    }
+    .close-btn{
+      position:absolute;top:1rem;right:1rem;
+      background:var(--glass);backdrop-filter:blur(8px);
+      border:1px solid rgba(255,0,0,.4);
+      color:var(--red);font-family:inherit;
+      padding:.4rem .8rem;border-radius:6px;
+      cursor:pointer;z-index:2;
+    }
+    .close-btn:hover{box-shadow:0 0 15px var(--red);}
+  </style>
+</head>
+<body>
+  <div id="lightning"></div>
+  <button class="close-btn" onclick="if(confirm('Really leave the horror?'))window.close();">X</button>
+  <div class="overlay" id="title">Loading…</div>
+  <iframe id="game" src=""></iframe>
+
+  <script>
+    // -------------------------------------------------
+    // 1. Parse game parameter
+    // -------------------------------------------------
+    const params = new URLSearchParams(location.search);
+    const folder = params.get('game');
+    if(!folder){
+      document.body.innerHTML = '<h1 style="color:red;text-align:center;margin-top:3rem;">NO GAME SELECTED</h1>';
+    }else{
+      const iframe = document.getElementById('game');
+      const titleEl = document.getElementById('title');
+
+      // Load manifest to get nice title
+      fetch('../games.json')
+        .then(r=>r.json())
+        .then(list=>{
+          const info = list.find(g=>g.folder===folder);
+          titleEl.textContent = info ? info.title : folder.replace(/_/g,' ');
+        })
+        .catch(()=>{titleEl.textContent = folder.replace(/_/g,' ');});
+
+      iframe.src = `../files/${folder}/index.html`;
+    }
+
+    // -------------------------------------------------
+    // 2. Anti-tab-close (asks before leaving)
+    // -------------------------------------------------
+    window.onbeforeunload = ()=> "Leaving will end the game. Continue?";
+
+    // -------------------------------------------------
+    // 3. Fullscreen on click (optional)
+    // -------------------------------------------------
+    document.body.addEventListener('click',()=>document.documentElement.requestFullscreen?.());
+  </script>
+</body>
+</html>

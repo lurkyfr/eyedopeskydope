@@ -1,1 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EYEDOPE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+  <style>
+    :root{--red:#ff0000;--black:#000;--glass:rgba(0,0,0,0.45);}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{
+      background:#000 url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect fill="%23000" width="100" height="100"/><path fill="%23ff0000" opacity="0.07" d="M0,0h10v100h-10zM20,0h10v100h-10zM40,0h10v100h-10zM60,0h10v100h-10zM80,0h10v100h-10z"/></svg>') repeat;
+      color:var(--red);
+      font-family:'Creepster',cursive;
+      overflow-x:hidden;
+      cursor:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path fill="%23ff0000" d="M16 2c-2 0-3.5 2-3.5 4s1.5 4 3.5 4 3.5-2 3.5-4-1.5-4-3.5-4zm0 6c-1 0-2-1-2-2s1-2 2-2 2 1 2 2-1 2-2 2zm0 4c-3 0-5.5 3-5.5 6s2.5 6 5.5 6 5.5-3 5.5-6-2.5-6-5.5-6zm0 10c-2 0-4-2-4-4s2-4 4-4 4 2 4 4-2 4-4 4z"/></svg>') 16 16, crosshair;
+    }
+    header{
+      text-align:center;
+      font-size:4rem;
+      margin:2rem 0;
+      text-shadow:0 0 15px var(--red);
+      animation:pulse 3s infinite;
+    }
+    @keyframes pulse{0%,100%{text-shadow:0 0 15px var(--red);}50%{text-shadow:0 0 30px var(--red);}}
+    #lightning{
+      position:fixed;top:0;left:0;width:100%;height:100%;
+      background:#fff;opacity:0;pointer-events:none;z-index:-1;
+      animation:flash 12s infinite;
+    }
+    @keyframes flash{
+      0%,100%{opacity:0;}
+      2%{opacity:.9;}
+      4%{opacity:0;}
+      7%{opacity:.6;}
+      9%{opacity:0;}
+    }
+    .games-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+      gap:1.5rem;
+      padding:0 1rem;
+    }
+    .game-card{
+      background:var(--glass);
+      backdrop-filter:blur(12px);
+      border:1px solid rgba(255,0,0,.4);
+      border-radius:12px;
+      overflow:hidden;
+      transition:transform .3s ease,box-shadow .3s ease;
+      cursor:pointer;
+    }
+    .game-card:hover{
+      transform:translateY(-8px) scale(1.03);
+      box-shadow:0 0 25px rgba(255,0,0,.7);
+    }
+    .game-card img{
+      width:100%;height:140px;object-fit:cover;
+      filter:brightness(.9);
+    }
+    .game-card h3{
+      margin:0.6rem 0;
+      font-size:1.3rem;
+      text-align:center;
+      text-shadow:0 0 8px var(--red);
+    }
+    .loading{
+      text-align:center;
+      font-size:1.5rem;
+      margin:3rem 0;
+    }
+    audio{display:none;}
+  </style>
+</head>
+<body>
+  <div id="lightning"></div>
+  <audio id="ambience" loop autoplay>
+    <source src="https://assets.mixkit.co/sfx/preview/mixkit-eerie-horror-ambience-1203.mp3" type="audio/mpeg">
+  </audio>
 
+  <header>EYEDOPE</header>
+
+  <div id="loading" class="loading">Scanning the crypt…</div>
+  <div class="games-grid" id="grid"></div>
+
+  <script>
+    // -------------------------------------------------
+    // 1. Load manifest
+    // -------------------------------------------------
+    fetch('games.json')
+      .then(r=>r.json())
+      .then(games=>{
+        document.getElementById('loading').remove();
+
+        // alphabetical by folder name
+        games.sort((a,b)=>a.folder.localeCompare(b.folder));
+
+        const grid = document.getElementById('grid');
+        games.forEach(g=>{
+          const card = document.createElement('div');
+          card.className='game-card';
+          card.innerHTML = `
+            <img src="files/${g.folder}/logo.png" alt="${g.title}" loading="lazy">
+            <h3>${g.title}</h3>
+          `;
+          card.onclick = ()=>openCloaked(`focus.html?game=${encodeURIComponent(g.folder)}`);
+          grid.appendChild(card);
+        });
+      })
+      .catch(err=>{
+        document.getElementById('loading').textContent='Failed to load games.';
+        console.error(err);
+      });
+
+    // -------------------------------------------------
+    // 2. about:blank cloaker (opens game in new tab, then hides it)
+    // -------------------------------------------------
+    function openCloaked(url){
+      const win = window.open('about:blank','_blank');
+      if(!win) return alert('Pop-up blocked! Allow pop-ups for EYEDOPE.');
+
+      const doc = win.document;
+      doc.open();
+      doc.write(`
+        <!DOCTYPE html>
+        <html><head><title>${url}</title></head>
+        <body style="margin:0;overflow:hidden;">
+          <iframe src="${url}" style="border:none;width:100vw;height:100vh;"></iframe>
+        </body></html>
+      `);
+      doc.close();
+
+      // anti-close (asks user)
+      win.onbeforeunload = ()=> "Leaving EYEDOPE will end your session. Continue?";
+    }
+  </script>
+</body>
+</html>
