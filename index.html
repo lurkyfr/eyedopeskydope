@@ -3,136 +3,648 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EYEDOPE</title>
-  <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+  <title>EYEDOPE • LIBRARY</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik+Glitch&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
-    :root{--red:#ff0000;--black:#000;--glass:rgba(0,0,0,0.45);}
-    *{margin:0;padding:0;box-sizing:border-box;}
-    body{
-      background:#000 url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect fill="%23000" width="100" height="100"/><path fill="%23ff0000" opacity="0.07" d="M0,0h10v100h-10zM20,0h10v100h-10zM40,0h10v100h-10zM60,0h10v100h-10zM80,0h10v100h-10z"/></svg>') repeat;
-      color:var(--red);
-      font-family:'Creepster',cursive;
-      overflow-x:hidden;
-      cursor:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path fill="%23ff0000" d="M16 2c-2 0-3.5 2-3.5 4s1.5 4 3.5 4 3.5-2 3.5-4-1.5-4-3.5-4zm0 6c-1 0-2-1-2-2s1-2 2-2 2 1 2 2-1 2-2 2zm0 4c-3 0-5.5 3-5.5 6s2.5 6 5.5 6 5.5-3 5.5-6-2.5-6-5.5-6zm0 10c-2 0-4-2-4-4s2-4 4-4 4 2 4 4-2 4-4 4z"/></svg>') 16 16, crosshair;
+    :root {
+      --red: #ff0033;
+      --red-bright: #ff1a4d;
+      --red-dark: #cc0029;
+      --red-glow: rgba(255, 0, 51, 0.6);
+      --black: #000000;
+      --dark-red: #1a0005;
+      --glass: rgba(10, 0, 5, 0.75);
+      --glass-border: rgba(255, 0, 51, 0.3);
+      --glass-light: rgba(255, 255, 255, 0.05);
     }
-    header{
-      text-align:center;
-      font-size:4rem;
-      margin:2rem 0;
-      text-shadow:0 0 15px var(--red);
-      animation:pulse 3s infinite;
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    @keyframes pulse{0%,100%{text-shadow:0 0 15px var(--red);}50%{text-shadow:0 0 30px var(--red);}}
-    #lightning{
-      position:fixed;top:0;left:0;width:100%;height:100%;
-      background:#fff;opacity:0;pointer-events:none;z-index:-1;
-      animation:flash 12s infinite;
+
+    body {
+      background: linear-gradient(135deg, #000000 0%, #0d0003 50%, #1a0005 100%);
+      color: var(--red);
+      font-family: 'Orbitron', sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+      position: relative;
+      cursor: crosshair;
     }
-    @keyframes flash{
-      0%,100%{opacity:0;}
-      2%{opacity:.9;}
-      4%{opacity:0;}
-      7%{opacity:.6;}
-      9%{opacity:0;}
+
+    /* Animated background grid */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(255, 0, 51, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 0, 51, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      animation: gridMove 20s linear infinite;
+      pointer-events: none;
+      z-index: 0;
     }
-    .games-grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-      gap:1.5rem;
-      padding:0 1rem;
+
+    @keyframes gridMove {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(50px, 50px); }
     }
-    .game-card{
-      background:var(--glass);
-      backdrop-filter:blur(12px);
-      border:1px solid rgba(255,0,0,.4);
-      border-radius:12px;
-      overflow:hidden;
-      transition:transform .3s ease,box-shadow .3s ease;
-      cursor:pointer;
+
+    /* Intense lightning flash with glitch */
+    #lightning {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, #fff 0%, #ff0033 50%, #fff 100%);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 9999;
+      animation: intenseLightning 8s infinite;
+      mix-blend-mode: screen;
     }
-    .game-card:hover{
-      transform:translateY(-8px) scale(1.03);
-      box-shadow:0 0 25px rgba(255,0,0,.7);
+
+    @keyframes intenseLightning {
+      0%, 100% { opacity: 0; }
+      2% { opacity: 0.95; }
+      2.5% { opacity: 0; }
+      3% { opacity: 0.85; }
+      3.5% { opacity: 0; }
+      6% { opacity: 0.7; }
+      6.2% { opacity: 0.9; }
+      6.4% { opacity: 0; }
+      9% { opacity: 0.6; }
+      9.3% { opacity: 0; }
     }
-    .game-card img{
-      width:100%;height:140px;object-fit:cover;
-      filter:brightness(.9);
+
+    /* Glitch overlay */
+    #glitch-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(255, 0, 51, 0.03) 0px,
+        transparent 2px,
+        transparent 4px,
+        rgba(255, 0, 51, 0.03) 4px
+      );
+      pointer-events: none;
+      z-index: 9998;
+      animation: glitchScan 8s linear infinite;
     }
-    .game-card h3{
-      margin:0.6rem 0;
-      font-size:1.3rem;
-      text-align:center;
-      text-shadow:0 0 8px var(--red);
+
+    @keyframes glitchScan {
+      0%, 100% { transform: translateY(0); opacity: 0.5; }
+      50% { transform: translateY(-100%); opacity: 0.3; }
     }
-    .loading{
-      text-align:center;
-      font-size:1.5rem;
-      margin:3rem 0;
+
+    /* Container */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 2rem;
     }
-    audio{display:none;}
+
+    /* Header with intense glitch effect */
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+      position: relative;
+    }
+
+    .logo {
+      font-family: 'Rubik Glitch', cursive;
+      font-size: clamp(3rem, 10vw, 6rem);
+      font-weight: 900;
+      letter-spacing: 0.5rem;
+      text-transform: uppercase;
+      background: linear-gradient(45deg, var(--red) 0%, var(--red-bright) 50%, var(--red) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      position: relative;
+      display: inline-block;
+      animation: logoGlitch 4s infinite, logoPulse 2s ease-in-out infinite;
+      text-shadow: 
+        0 0 30px var(--red-glow),
+        0 0 60px var(--red-glow),
+        0 0 90px var(--red-glow);
+    }
+
+    @keyframes logoGlitch {
+      0%, 90%, 100% { transform: translate(0, 0) skew(0deg); }
+      91% { transform: translate(-4px, 2px) skew(-2deg); }
+      92% { transform: translate(3px, -2px) skew(2deg); }
+      93% { transform: translate(-2px, 1px) skew(-1deg); }
+      94% { transform: translate(0, 0) skew(0deg); }
+    }
+
+    @keyframes logoPulse {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.3); }
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      letter-spacing: 0.3rem;
+      margin-top: 1rem;
+      opacity: 0.8;
+      text-transform: uppercase;
+      animation: subtitleFlicker 3s infinite;
+    }
+
+    @keyframes subtitleFlicker {
+      0%, 100% { opacity: 0.8; }
+      41%, 43%, 47% { opacity: 0.3; }
+      45%, 49% { opacity: 0.9; }
+    }
+
+    /* Search bar */
+    .search-container {
+      max-width: 600px;
+      margin: 0 auto 3rem;
+      position: relative;
+    }
+
+    .search-bar {
+      width: 100%;
+      padding: 1.2rem 1.5rem;
+      background: var(--glass);
+      backdrop-filter: blur(20px);
+      border: 2px solid var(--glass-border);
+      border-radius: 16px;
+      color: var(--red);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .search-bar::placeholder {
+      color: rgba(255, 0, 51, 0.5);
+    }
+
+    .search-bar:focus {
+      border-color: var(--red);
+      box-shadow: 
+        0 0 30px var(--red-glow),
+        0 8px 32px rgba(0, 0, 0, 0.6);
+      transform: translateY(-2px);
+    }
+
+    /* Loading state */
+    .loading {
+      text-align: center;
+      font-size: 1.5rem;
+      margin: 4rem 0;
+      animation: loadingPulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes loadingPulse {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+
+    /* Games grid */
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 2rem;
+      padding: 1rem 0;
+    }
+
+    /* Game card with enhanced glassmorphism */
+    .game-card {
+      background: var(--glass);
+      backdrop-filter: blur(20px) saturate(180%);
+      border: 2px solid var(--glass-border);
+      border-radius: 20px;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      position: relative;
+      box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .game-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, var(--glass-light) 0%, transparent 100%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .game-card:hover::before {
+      opacity: 1;
+    }
+
+    .game-card:hover {
+      transform: translateY(-12px) scale(1.02);
+      border-color: var(--red);
+      box-shadow: 
+        0 0 40px var(--red-glow),
+        0 16px 48px rgba(0, 0, 0, 0.7),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    .game-card:active {
+      transform: translateY(-8px) scale(1.01);
+    }
+
+    .game-image-container {
+      width: 100%;
+      height: 200px;
+      overflow: hidden;
+      position: relative;
+      background: linear-gradient(135deg, rgba(255, 0, 51, 0.1) 0%, rgba(0, 0, 0, 0.5) 100%);
+    }
+
+    .game-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.8) contrast(1.1);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .game-card:hover img {
+      filter: brightness(1.1) contrast(1.2);
+      transform: scale(1.1) rotate(1deg);
+    }
+
+    .game-info {
+      padding: 1.5rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .game-card h3 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.1rem;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 0 15px var(--red-glow);
+      transition: all 0.3s ease;
+    }
+
+    .game-card:hover h3 {
+      text-shadow: 0 0 25px var(--red-glow);
+      transform: scale(1.05);
+    }
+
+    .play-indicator {
+      text-align: center;
+      font-size: 0.9rem;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: all 0.3s ease;
+      color: var(--red-bright);
+      text-transform: uppercase;
+      letter-spacing: 0.15rem;
+    }
+
+    .game-card:hover .play-indicator {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      margin: 4rem 0;
+      opacity: 0.7;
+    }
+
+    .empty-state p {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 3rem 1rem 2rem;
+      opacity: 0.6;
+      font-size: 0.9rem;
+      letter-spacing: 0.1rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+
+      .games-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .game-image-container {
+        height: 160px;
+      }
+
+      .logo {
+        font-size: 3rem;
+        letter-spacing: 0.3rem;
+      }
+
+      .subtitle {
+        font-size: 1rem;
+      }
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 12px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--black);
+      border-left: 1px solid var(--glass-border);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--glass);
+      border: 2px solid var(--black);
+      border-radius: 6px;
+      backdrop-filter: blur(10px);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--red-dark);
+      box-shadow: 0 0 10px var(--red-glow);
+    }
   </style>
 </head>
 <body>
   <div id="lightning"></div>
-  <audio id="ambience" loop autoplay>
-    <source src="https://assets.mixkit.co/sfx/preview/mixkit-eerie-horror-ambience-1203.mp3" type="audio/mpeg">
-  </audio>
+  <div id="glitch-overlay"></div>
 
-  <header>EYEDOPE</header>
+  <div class="container">
+    <header>
+      <h1 class="logo">EYEDOPE</h1>
+      <p class="subtitle">Enter the Void</p>
+    </header>
 
-  <div id="loading" class="loading">Scanning the crypt…</div>
-  <div class="games-grid" id="grid"></div>
+    <div class="search-container">
+      <input 
+        type="text" 
+        class="search-bar" 
+        id="searchBar" 
+        placeholder="Search games..."
+        autocomplete="off"
+      >
+    </div>
+
+    <div id="loading" class="loading">Scanning the abyss...</div>
+    <div class="games-grid" id="gamesGrid"></div>
+    <div id="emptyState" class="empty-state" style="display: none;">
+      <p>No games found</p>
+    </div>
+
+    <footer>
+      <p>© EYEDOPE • Venture into darkness</p>
+    </footer>
+  </div>
 
   <script>
-    // -------------------------------------------------
-    // 1. Load manifest
-    // -------------------------------------------------
-    fetch('games.json')
-      .then(r=>r.json())
-      .then(games=>{
-        document.getElementById('loading').remove();
+    // Game discovery and population system
+    const gamesGrid = document.getElementById('gamesGrid');
+    const loading = document.getElementById('loading');
+    const emptyState = document.getElementById('emptyState');
+    const searchBar = document.getElementById('searchBar');
 
-        // alphabetical by folder name
-        games.sort((a,b)=>a.folder.localeCompare(b.folder));
+    let allGames = [];
+    let filteredGames = [];
 
-        const grid = document.getElementById('grid');
-        games.forEach(g=>{
-          const card = document.createElement('div');
-          card.className='game-card';
-          card.innerHTML = `
-            <img src="files/${g.folder}/logo.png" alt="${g.title}" loading="lazy">
-            <h3>${g.title}</h3>
-          `;
-          card.onclick = ()=>openCloaked(`focus.html?game=${encodeURIComponent(g.folder)}`);
-          grid.appendChild(card);
-        });
-      })
-      .catch(err=>{
-        document.getElementById('loading').textContent='Failed to load games.';
-        console.error(err);
-      });
+    // Auto-discover games from files folder
+    async function discoverGames() {
+      try {
+        // Try to load games.json first (if exists)
+        try {
+          const response = await fetch('games.json');
+          if (response.ok) {
+            const games = await response.json();
+            return games.map(g => ({
+              folder: g.folder,
+              title: g.title || formatTitle(g.folder)
+            }));
+          }
+        } catch (e) {
+          console.log('No games.json found, scanning directories...');
+        }
 
-    // -------------------------------------------------
-    // 2. about:blank cloaker (opens game in new tab, then hides it)
-    // -------------------------------------------------
-    function openCloaked(url){
-      const win = window.open('about:blank','_blank');
-      if(!win) return alert('Pop-up blocked! Allow pop-ups for EYEDOPE.');
+        // Fallback: manual game list (you can add more here)
+        // This list will be used if games.json doesn't exist
+        const knownGames = [
+          'slope',
+          'tunnel-rush',
+          'run-3',
+          'geometry-dash',
+          'happy-wheels',
+          'super-mario-64',
+          'minecraft-classic',
+          'tetris',
+          'pac-man',
+          'space-invaders',
+          'doom',
+          'portal',
+          'half-life',
+          'counter-strike',
+          'fnaf',
+          '2048',
+          'flappy-bird',
+          'angry-birds',
+          'subway-surfers',
+          'temple-run'
+        ];
+
+        // Check which games actually exist
+        const existingGames = [];
+        for (const folder of knownGames) {
+          try {
+            // Check if logo exists
+            const logoCheck = await fetch(`files/${folder}/logo.png`, { method: 'HEAD' });
+            if (logoCheck.ok) {
+              existingGames.push({
+                folder: folder,
+                title: formatTitle(folder)
+              });
+            }
+          } catch (e) {
+            console.log(`Game not found: ${folder}`);
+          }
+        }
+
+        return existingGames;
+      } catch (error) {
+        console.error('Error discovering games:', error);
+        return [];
+      }
+    }
+
+    // Format folder name to title
+    function formatTitle(folder) {
+      return folder
+        .replace(/[-_]/g, ' ')
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+    }
+
+    // Create game card element
+    function createGameCard(game) {
+      const card = document.createElement('div');
+      card.className = 'game-card';
+      card.dataset.title = game.title.toLowerCase();
+      
+      card.innerHTML = `
+        <div class="game-image-container">
+          <img 
+            src="files/${game.folder}/logo.png" 
+            alt="${game.title}" 
+            loading="lazy"
+            onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22%3E%3Crect fill=%22%23000%22 width=%22400%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 fill=%22%23ff0033%22 font-family=%22monospace%22 font-size=%2224%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22%3E${game.title}%3C/text%3E%3C/svg%3E'"
+          >
+        </div>
+        <div class="game-info">
+          <h3>${game.title}</h3>
+          <div class="play-indicator">▶ Click to Play</div>
+        </div>
+      `;
+
+      card.addEventListener('click', () => openGame(game.folder));
+      
+      return card;
+    }
+
+    // Open game in cloaked window
+    function openGame(gameFolder) {
+      const gameURL = `focus.html?game=${encodeURIComponent(gameFolder)}`;
+      const win = window.open('about:blank', '_blank');
+      
+      if (!win) {
+        alert('⚠️ Pop-up blocked! Please allow pop-ups for EYEDOPE.');
+        return;
+      }
 
       const doc = win.document;
       doc.open();
       doc.write(`
         <!DOCTYPE html>
-        <html><head><title>${url}</title></head>
-        <body style="margin:0;overflow:hidden;">
-          <iframe src="${url}" style="border:none;width:100vw;height:100vh;"></iframe>
-        </body></html>
+        <html>
+        <head>
+          <title>Loading...</title>
+          <style>
+            body { margin: 0; overflow: hidden; background: #000; }
+            iframe { border: none; width: 100vw; height: 100vh; }
+          </style>
+        </head>
+        <body>
+          <iframe src="${gameURL}" allowfullscreen></iframe>
+        </body>
+        </html>
       `);
       doc.close();
 
-      // anti-close (asks user)
-      win.onbeforeunload = ()=> "Leaving EYEDOPE will end your session. Continue?";
+      win.onbeforeunload = () => "Leave EYEDOPE? Your progress may be lost.";
     }
+
+    // Render games to grid
+    function renderGames(games) {
+      gamesGrid.innerHTML = '';
+      
+      if (games.length === 0) {
+        gamesGrid.style.display = 'none';
+        emptyState.style.display = 'block';
+        return;
+      }
+
+      gamesGrid.style.display = 'grid';
+      emptyState.style.display = 'none';
+
+      games.forEach(game => {
+        const card = createGameCard(game);
+        gamesGrid.appendChild(card);
+      });
+    }
+
+    // Search functionality
+    searchBar.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase().trim();
+      
+      if (query === '') {
+        filteredGames = [...allGames];
+      } else {
+        filteredGames = allGames.filter(game => 
+          game.title.toLowerCase().includes(query) ||
+          game.folder.toLowerCase().includes(query)
+        );
+      }
+      
+      renderGames(filteredGames);
+    });
+
+    // Initialize
+    async function init() {
+      try {
+        allGames = await discoverGames();
+        
+        // Sort alphabetically
+        allGames.sort((a, b) => a.title.localeCompare(b.title));
+        
+        filteredGames = [...allGames];
+        
+        loading.style.display = 'none';
+        renderGames(filteredGames);
+        
+        console.log(`✓ Loaded ${allGames.length} games`);
+      } catch (error) {
+        loading.textContent = 'Error loading games';
+        console.error('Initialization error:', error);
+      }
+    }
+
+    // Start the app
+    init();
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (e.key === '/' || (e.ctrlKey && e.key === 'f')) {
+        e.preventDefault();
+        searchBar.focus();
+      }
+      if (e.key === 'Escape') {
+        searchBar.value = '';
+        searchBar.blur();
+        filteredGames = [...allGames];
+        renderGames(filteredGames);
+      }
+    });
   </script>
 </body>
 </html>

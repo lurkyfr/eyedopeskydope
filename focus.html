@@ -4,91 +4,597 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EYEDOPE • PLAYING</title>
-  <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
-    :root{--red:#ff0000;--black:#000;--glass:rgba(0,0,0,0.5);}
-    *{margin:0;padding:0;box-sizing:border-box;}
-    body{
-      background:#000;
-      color:var(--red);
-      font-family:'Creepster',cursive;
-      overflow:hidden;
-      height:100vh;
+    :root {
+      --red: #ff0033;
+      --red-bright: #ff1a4d;
+      --red-dark: #cc0029;
+      --red-glow: rgba(255, 0, 51, 0.8);
+      --black: #000000;
+      --glass: rgba(10, 0, 5, 0.85);
+      --glass-border: rgba(255, 0, 51, 0.4);
+      --glass-light: rgba(255, 255, 255, 0.08);
     }
-    #lightning{
-      position:fixed;top:0;left:0;width:100%;height:100%;
-      background:#fff;opacity:0;pointer-events:none;z-index:9999;
-      animation:flash 11s infinite;
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    @keyframes flash{
-      0%,100%{opacity:0;}
-      3%{opacity:.85;}
-      5%{opacity:0;}
-      8%{opacity:.55;}
-      10%{opacity:0;}
+
+    body {
+      background: #000;
+      color: var(--red);
+      font-family: 'Orbitron', sans-serif;
+      overflow: hidden;
+      height: 100vh;
+      position: relative;
     }
-    iframe{
-      position:absolute;top:0;left:0;width:100%;height:100%;
-      border:none;
-      z-index:1;
+
+    /* Intense lightning effect */
+    #lightning {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, rgba(255, 255, 255, 0.8) 0%, rgba(255, 0, 51, 0.4) 50%, transparent 100%);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 9999;
+      animation: extremeLightning 7s infinite;
+      mix-blend-mode: screen;
     }
-    .overlay{
-      position:absolute;bottom:1rem;left:1rem;
-      background:var(--glass);backdrop-filter:blur(8px);
-      padding:.5rem 1rem;border-radius:8px;
-      border:1px solid rgba(255,0,0,.4);
-      font-size:1.1rem;z-index:2;
+
+    @keyframes extremeLightning {
+      0%, 100% { opacity: 0; }
+      1.5% { opacity: 0.95; }
+      2% { opacity: 0; }
+      2.5% { opacity: 0.88; }
+      3% { opacity: 0; }
+      3.2% { opacity: 0.92; }
+      3.5% { opacity: 0; }
+      7% { opacity: 0.75; }
+      7.3% { opacity: 0.9; }
+      7.6% { opacity: 0; }
     }
-    .close-btn{
-      position:absolute;top:1rem;right:1rem;
-      background:var(--glass);backdrop-filter:blur(8px);
-      border:1px solid rgba(255,0,0,.4);
-      color:var(--red);font-family:inherit;
-      padding:.4rem .8rem;border-radius:6px;
-      cursor:pointer;z-index:2;
+
+    /* Glitch effect overlay */
+    #glitch {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(255, 0, 51, 0.05) 0px,
+        transparent 1px,
+        transparent 2px,
+        rgba(255, 0, 51, 0.05) 2px
+      );
+      pointer-events: none;
+      z-index: 9998;
+      animation: glitchMove 6s linear infinite;
+      opacity: 0.4;
     }
-    .close-btn:hover{box-shadow:0 0 15px var(--red);}
+
+    @keyframes glitchMove {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(100%); }
+    }
+
+    /* Game iframe */
+    iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      z-index: 1;
+      background: #000;
+    }
+
+    /* Controls overlay */
+    .controls {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem;
+      z-index: 10;
+      opacity: 0;
+      transform: translateY(-120%);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
+    }
+
+    .controls.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: all;
+    }
+
+    body:hover .controls,
+    .controls:hover {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: all;
+    }
+
+    /* Glass button styling */
+    .glass-btn {
+      background: var(--glass);
+      backdrop-filter: blur(20px) saturate(180%);
+      border: 2px solid var(--glass-border);
+      color: var(--red);
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      padding: 0.9rem 1.8rem;
+      border-radius: 14px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glass-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, var(--glass-light), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .glass-btn:hover::before {
+      left: 100%;
+    }
+
+    .glass-btn:hover {
+      border-color: var(--red);
+      box-shadow: 
+        0 0 30px var(--red-glow),
+        0 12px 40px rgba(0, 0, 0, 0.8),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      transform: translateY(-3px);
+      background: rgba(15, 0, 5, 0.9);
+    }
+
+    .glass-btn:active {
+      transform: translateY(-1px);
+      box-shadow: 
+        0 0 20px var(--red-glow),
+        0 8px 24px rgba(0, 0, 0, 0.7);
+    }
+
+    /* Title badge */
+    .title-badge {
+      background: var(--glass);
+      backdrop-filter: blur(20px) saturate(180%);
+      padding: 0.9rem 2rem;
+      border-radius: 14px;
+      border: 2px solid var(--glass-border);
+      font-size: 1.3rem;
+      font-weight: 700;
+      box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      text-transform: uppercase;
+      letter-spacing: 0.18rem;
+      text-shadow: 0 0 20px var(--red-glow);
+      animation: titlePulse 3s ease-in-out infinite;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .title-badge::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, var(--glass-light) 0%, transparent 100%);
+      opacity: 0.5;
+    }
+
+    @keyframes titlePulse {
+      0%, 100% { 
+        text-shadow: 0 0 20px var(--red-glow);
+        border-color: var(--glass-border);
+      }
+      50% { 
+        text-shadow: 0 0 30px var(--red-glow), 0 0 50px var(--red-glow);
+        border-color: rgba(255, 0, 51, 0.6);
+      }
+    }
+
+    /* Button icons */
+    .btn-icon {
+      font-size: 1.3rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Loading screen */
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #000 0%, #1a0005 50%, #0d0003 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      animation: loadingPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes loadingPulse {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .loading-text {
+      font-size: 2.2rem;
+      font-weight: 700;
+      text-shadow: 
+        0 0 20px var(--red-glow),
+        0 0 40px var(--red-glow);
+      margin-bottom: 2.5rem;
+      animation: textFlicker 2s infinite;
+      letter-spacing: 0.2rem;
+      text-transform: uppercase;
+    }
+
+    @keyframes textFlicker {
+      0%, 100% { opacity: 1; }
+      40%, 42%, 44% { opacity: 0.6; }
+      43%, 45% { opacity: 0.9; }
+    }
+
+    .loading-spinner {
+      width: 80px;
+      height: 80px;
+      border: 5px solid rgba(255, 0, 51, 0.2);
+      border-top-color: var(--red);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      box-shadow: 0 0 30px var(--red-glow);
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Error screen */
+    .error-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #000 0%, #1a0005 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .error-title {
+      font-size: 3.5rem;
+      font-weight: 900;
+      text-shadow: 
+        0 0 40px var(--red-glow),
+        0 0 80px var(--red-glow);
+      margin-bottom: 1.5rem;
+      animation: errorGlitch 2s infinite;
+      letter-spacing: 0.3rem;
+    }
+
+    @keyframes errorGlitch {
+      0%, 90%, 100% { transform: translate(0, 0); }
+      91% { transform: translate(-5px, 3px); }
+      93% { transform: translate(4px, -3px); }
+      95% { transform: translate(-3px, 2px); }
+    }
+
+    .error-message {
+      font-size: 1.4rem;
+      opacity: 0.8;
+      margin-bottom: 2.5rem;
+      max-width: 600px;
+      line-height: 1.6;
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .controls {
+        flex-direction: column;
+        gap: 0.8rem;
+        align-items: stretch;
+        padding: 1rem;
+      }
+      
+      .glass-btn {
+        justify-content: center;
+        padding: 0.8rem 1.2rem;
+      }
+      
+      .title-badge {
+        font-size: 1.1rem;
+        text-align: center;
+        padding: 0.8rem 1.2rem;
+      }
+
+      .loading-text {
+        font-size: 1.5rem;
+      }
+
+      .error-title {
+        font-size: 2.5rem;
+      }
+
+      .error-message {
+        font-size: 1.1rem;
+      }
+    }
+
+    /* Notification toast */
+    .notification {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(150%);
+      background: var(--glass);
+      backdrop-filter: blur(20px);
+      border: 2px solid var(--glass-border);
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+      z-index: 9997;
+      font-size: 0.95rem;
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      letter-spacing: 0.05rem;
+    }
+
+    .notification.show {
+      transform: translateX(-50%) translateY(0);
+    }
   </style>
 </head>
 <body>
   <div id="lightning"></div>
-  <button class="close-btn" onclick="if(confirm('Really leave the horror?'))window.close();">X</button>
-  <div class="overlay" id="title">Loading…</div>
-  <iframe id="game" src=""></iframe>
+  <div id="glitch"></div>
+
+  <!-- Loading screen -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loading-text">Entering the void...</div>
+    <div class="loading-spinner"></div>
+  </div>
+
+  <!-- Controls overlay -->
+  <div class="controls">
+    <button class="glass-btn" id="backBtn" title="Return to game library">
+      <span class="btn-icon">←</span>
+      <span>Library</span>
+    </button>
+    
+    <div class="title-badge" id="gameTitle">Loading...</div>
+    
+    <button class="glass-btn" id="fullscreenBtn" title="Toggle fullscreen mode">
+      <span class="btn-icon">⛶</span>
+      <span>Fullscreen</span>
+    </button>
+  </div>
+
+  <!-- Game iframe -->
+  <iframe id="gameFrame" src="" allowfullscreen></iframe>
+
+  <!-- Notification toast -->
+  <div class="notification" id="notification"></div>
 
   <script>
-    // -------------------------------------------------
-    // 1. Parse game parameter
-    // -------------------------------------------------
-    const params = new URLSearchParams(location.search);
-    const folder = params.get('game');
-    if(!folder){
-      document.body.innerHTML = '<h1 style="color:red;text-align:center;margin-top:3rem;">NO GAME SELECTED</h1>';
-    }else{
-      const iframe = document.getElementById('game');
-      const titleEl = document.getElementById('title');
+    // Parse URL parameters
+    const params = new URLSearchParams(window.location.search);
+    const gameFolder = params.get('game');
 
-      // Load manifest to get nice title
-      fetch('../games.json')
-        .then(r=>r.json())
-        .then(list=>{
-          const info = list.find(g=>g.folder===folder);
-          titleEl.textContent = info ? info.title : folder.replace(/_/g,' ');
-        })
-        .catch(()=>{titleEl.textContent = folder.replace(/_/g,' ');});
+    const loadingScreen = document.getElementById('loadingScreen');
+    const gameFrame = document.getElementById('gameFrame');
+    const gameTitle = document.getElementById('gameTitle');
+    const backBtn = document.getElementById('backBtn');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    const notification = document.getElementById('notification');
 
-      iframe.src = `../files/${folder}/index.html`;
+    // Show notification
+    function showNotification(message, duration = 3000) {
+      notification.textContent = message;
+      notification.classList.add('show');
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, duration);
     }
 
-    // -------------------------------------------------
-    // 2. Anti-tab-close (asks before leaving)
-    // -------------------------------------------------
-    window.onbeforeunload = ()=> "Leaving will end the game. Continue?";
+    // Handle no game selected
+    if (!gameFolder) {
+      loadingScreen.innerHTML = `
+        <div class="error-screen">
+          <h1 class="error-title">NO GAME SELECTED</h1>
+          <p class="error-message">You must choose a game from the library to play</p>
+          <button class="glass-btn" onclick="window.location.href='index.html'">
+            <span class="btn-icon">←</span>
+            <span>Return to Library</span>
+          </button>
+        </div>
+      `;
+    } else {
+      // Format game title
+      const formattedTitle = gameFolder
+        .replace(/[-_]/g, ' ')
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+      
+      gameTitle.textContent = formattedTitle;
+      document.title = `EYEDOPE • ${formattedTitle}`;
+      
+      // Load the game
+      const gamePath = `files/${gameFolder}/index.html`;
+      gameFrame.src = gamePath;
+      
+      // Hide loading screen when game loads
+      let loadTimeout = setTimeout(() => {
+        console.warn('Game loading timeout');
+        loadingScreen.innerHTML = `
+          <div class="error-screen">
+            <h1 class="error-title">LOADING TIMEOUT</h1>
+            <p class="error-message">The game "${formattedTitle}" is taking too long to load</p>
+            <button class="glass-btn" onclick="location.reload()">
+              <span class="btn-icon">↻</span>
+              <span>Retry</span>
+            </button>
+            <button class="glass-btn" onclick="window.location.href='index.html'" style="margin-top: 1rem;">
+              <span class="btn-icon">←</span>
+              <span>Return to Library</span>
+            </button>
+          </div>
+        `;
+      }, 15000); // 15 second timeout
 
-    // -------------------------------------------------
-    // 3. Fullscreen on click (optional)
-    // -------------------------------------------------
-    document.body.addEventListener('click',()=>document.documentElement.requestFullscreen?.());
+      gameFrame.addEventListener('load', () => {
+        clearTimeout(loadTimeout);
+        setTimeout(() => {
+          loadingScreen.style.transition = 'opacity 0.6s ease';
+          loadingScreen.style.opacity = '0';
+          setTimeout(() => {
+            loadingScreen.style.display = 'none';
+            showNotification('Press ESC to show controls');
+          }, 600);
+        }, 400);
+      });
+      
+      // Handle loading errors
+      gameFrame.addEventListener('error', () => {
+        clearTimeout(loadTimeout);
+        loadingScreen.innerHTML = `
+          <div class="error-screen">
+            <h1 class="error-title">GAME NOT FOUND</h1>
+            <p class="error-message">The game "${formattedTitle}" could not be loaded. Please check if the game files exist.</p>
+            <button class="glass-btn" onclick="window.location.href='index.html'">
+              <span class="btn-icon">←</span>
+              <span>Return to Library</span>
+            </button>
+          </div>
+        `;
+      });
+    }
+
+    // Back button
+    backBtn.addEventListener('click', () => {
+      const leave = confirm('Leave the game and return to the library? Progress may be lost.');
+      if (leave) {
+        window.location.href = 'index.html';
+      }
+    });
+
+    // Fullscreen toggle
+    fullscreenBtn.addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          showNotification('Fullscreen failed: ' + err.message);
+          console.error('Fullscreen error:', err);
+        });
+      } else {
+        document.exitFullscreen();
+      }
+    });
+
+    // Update fullscreen button
+    document.addEventListener('fullscreenchange', () => {
+      const text = fullscreenBtn.querySelector('span:last-child');
+      
+      if (document.fullscreenElement) {
+        text.textContent = 'Exit FS';
+        showNotification('Press ESC to exit fullscreen');
+      } else {
+        text.textContent = 'Fullscreen';
+      }
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      // ESC - show controls
+      if (e.key === 'Escape' && !document.fullscreenElement) {
+        const controls = document.querySelector('.controls');
+        controls.classList.add('visible');
+        setTimeout(() => {
+          controls.classList.remove('visible');
+        }, 4000);
+      }
+      
+      // F11 - fullscreen
+      if (e.key === 'F11') {
+        e.preventDefault();
+        fullscreenBtn.click();
+      }
+
+      // Ctrl/Cmd + B - back to library
+      if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+        e.preventDefault();
+        backBtn.click();
+      }
+    });
+
+    // Warn before closing
+    window.addEventListener('beforeunload', (e) => {
+      e.preventDefault();
+      e.returnValue = 'Leave EYEDOPE? Game progress may be lost.';
+      return e.returnValue;
+    });
+
+    // Show controls briefly on load
+    setTimeout(() => {
+      const controls = document.querySelector('.controls');
+      controls.classList.add('visible');
+      setTimeout(() => {
+        controls.classList.remove('visible');
+      }, 4000);
+    }, 1500);
+
+    // Mouse movement shows controls
+    let mouseTimeout;
+    document.addEventListener('mousemove', () => {
+      clearTimeout(mouseTimeout);
+      document.querySelector('.controls').classList.add('visible');
+      mouseTimeout = setTimeout(() => {
+        document.querySelector('.controls').classList.remove('visible');
+      }, 3000);
+    });
   </script>
 </body>
 </html>
